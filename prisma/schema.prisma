@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TaskState {
+  pending
+  processing
+  completed
+  completed_with_fallback
+  needs_manual_review
+}
+
+model Task {
+  id             String    @id @default(uuid())
+  state          TaskState @default(pending)
+  currentPhase   String?
+  phase1Retries  Int       @default(0)
+  phase2Retries  Int       @default(0)
+  phase1Done     Boolean   @default(false)
+  phase2Done     Boolean   @default(false)
+  inputTicket    Json
+  phase1Output   Json?
+  phase2Output   Json?
+  fallbackReason String?
+  fallbackAt     DateTime?
+  createdAt      DateTime  @default(now())
+  stateChangedAt DateTime  @default(now())
+  lastMutatedAt  DateTime  @default(now()) @updatedAt
+
+  @@index([state])
+  @@index([createdAt])
+}
