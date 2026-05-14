@@ -1,40 +1,13 @@
 {
-  "name": "ticketproject",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "name": "ticketapp",
+  "private": true,
   "scripts": {
-    "dev:worker": "node --watch --import tsx/esm src/worker/worker.ts",
-    "dev:server": "node --watch --import tsx/esm src/app.ts",
-    "dev:queues": "bash scripts/setup-queues.sh",
-    "build": "tsc",
-    "test": "vitest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1035.0",
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "pg": "^8.20.0",
-    "pino": "^10.3.1",
-    "portkey-ai": "^3.1.0",
-    "socket.io": "^4.8.3",
-    "zod": "^4.3.6"
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm --prefix backend run dev:server\" \"npm --prefix frontend run dev\"",
+    "dev:backend": "npm --prefix backend run dev:server",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.6.0",
-    "@types/pg": "^8.20.0",
-    "prisma": "^7.8.0",
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "concurrently": "^9.0.0"
   }
 }

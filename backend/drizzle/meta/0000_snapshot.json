@@ -1,0 +1,175 @@
+{
+  "id": "3ce73a2e-08ff-434b-8aa7-e6ea0f94b3d5",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Task": {
+      "name": "Task",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "state": {
+          "name": "state",
+          "type": "TaskState",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "currentPhase": {
+          "name": "currentPhase",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phase1Retries": {
+          "name": "phase1Retries",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "phase2Retries": {
+          "name": "phase2Retries",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "phase1Done": {
+          "name": "phase1Done",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "phase2Done": {
+          "name": "phase2Done",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "inputTicket": {
+          "name": "inputTicket",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phase1Output": {
+          "name": "phase1Output",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phase2Output": {
+          "name": "phase2Output",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fallbackReason": {
+          "name": "fallbackReason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fallbackAt": {
+          "name": "fallbackAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "stateChangedAt": {
+          "name": "stateChangedAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "lastMutatedAt": {
+          "name": "lastMutatedAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {
+        "Task_state_idx": {
+          "name": "Task_state_idx",
+          "columns": [
+            {
+              "expression": "state",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "Task_createdAt_idx": {
+          "name": "Task_createdAt_idx",
+          "columns": [
+            {
+              "expression": "createdAt",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.TaskState": {
+      "name": "TaskState",
+      "schema": "public",
+      "values": [
+        "pending",
+        "processing",
+        "completed",
+        "completed_with_fallback",
+        "needs_manual_review"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

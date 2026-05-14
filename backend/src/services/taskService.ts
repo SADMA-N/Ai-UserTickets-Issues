@@ -1,0 +1,61 @@
+import { TaskState, type Task } from "../db/schema.js";
+import { getTask } from "../repositories/taskRepositories.js";
+
+export function buildOutputs(task: Task) {
+  if (task.state === TaskState.pending) return null;
+  if (task.state === TaskState.processing && !task.phase1Done) return null;
+  if (task.state === TaskState.needs_manual_review)
+    return { phase_1: null, phase_2: null };
+
+  if (task.phase1Done && !task.phase2Done) {
+    return { phase_1: task.phase1Output, phase_2: null };
+  }
+
+  if (task.state === TaskState.completed) {
+    return { phase_1: task.phase1Output, phase_2: task.phase2Output };
+  }
+
+  if (task.state === TaskState.completed_with_fallback) {
+    return {
+      phase_1: task.phase1Output,
+      phase_2: task.phase2Output ?? {
+        response_draft: null,
+        internal_note:
+          "Automated resolution draft could not be generated. Manual review required.",
+        next_actions: null,
+      },
+    };
+  }
+
+  return null;
+}
+
+export function buildFallbackInfo(task: Task) {
+  if (!task.fallbackReason) return null;
+  return {
+    reason: task.fallbackReason,
+    fallback_at: task.fallbackAt,
+  };
+}
+
+export async function getTaskById(id: string) {
+  const task = await getTask(id);
+  if (!task) return null;
+
+  return {
+    task_id: task.id,
+    state: task.state,
+    current_phase: task.currentPhase,
+    retry_count: {
+      phase_1: task.phase1Retries,
+      phase_2: task.phase2Retries,
+    },
+    created_at: task.createdAt,
+    state_changed_at: task.stateChangedAt,
+    last_mutated_at: task.lastMutatedAt,
+    outputs: buildOutputs(task),
+    input_ticket:
+      task.state === TaskState.needs_manual_review ? task.inputTicket : null,
+    fallback_info: buildFallbackInfo(task),
+  };
+}
